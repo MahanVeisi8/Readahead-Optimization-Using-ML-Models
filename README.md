@@ -67,76 +67,117 @@ lttng destroy
 babeltrace2 /my-kernel-trace > data.txt
 ```
 
-## Data Processing
+## Data Preprocessing
 
-The raw data from the LTTng traces was processed to extract relevant features such as the timestamp (`Second`), inode number (`Ino`), and the number of transactions (`Transactions`). These features were normalized using Z-Score normalization to prepare them for model training.
+After collecting and organizing the dataset, a crucial step involved preprocessing the data to prepare it for model training. The dataset contains 1,425,432 rows and 9 columns, as shown in the figure below:
 
-```python
-from sklearn.preprocessing import StandardScaler
+![Dataset Overview](path_to_image1)
 
-X = df_all[['Second', 'Ino', 'Transactions']]
-scaler = StandardScaler()
-X_normalized = scaler.fit_transform(X)
-```
+### Feature Selection Using Random Forest
+
+To identify the most important features for our models, we used a Random Forest classifier to calculate feature importances. The Random Forest model highlighted `cumulative_time_elapsed` as the most significant feature by a large margin, followed by `flag`, `ino`, and `time_difference`. Features like `state` and `distance_from_mean` were less significant.
+
+![Feature Importance](path_to_image2)
+
+Based on this analysis, we removed features with importance values below a certain threshold to reduce the dataset's dimensionality, focusing only on the most relevant data.
+
+### Data Visualization with t-SNE
+
+To understand the distribution and separability of the different workload types in our dataset, we used t-SNE (t-distributed Stochastic Neighbor Embedding), a dimensionality reduction technique. The t-SNE plot below shows the dataset visualized in two dimensions, highlighting the clustering of different workload types. The distinct separation in the t-SNE plot indicates that our features are well-suited for classifying the different workloads.
+
+![t-SNE Visualization](path_to_image3)
 
 ## Model Implementation
 
-### Decision Tree
-
-A Decision Tree classifier was implemented to classify the workload types based on the extracted features. The model was evaluated using cross-validation to ensure its robustness.
-
-```python
-from sklearn.tree import DecisionTreeClassifier
-from sklearn.model_selection import cross_val_score
-
-dt_model = DecisionTreeClassifier(random_state=42)
-cv = StratifiedKFold(n_splits=10, shuffle=True, random_state=42)
-dt_scores = cross_val_score(dt_model, X_normalized, y, cv=cv, scoring='accuracy')
-```
-
-**Results:**
-- **Accuracy:** 95.24%
-- **Confusion Matrix:** 
-- **Classification Report:** (See below)
-
-![Decision Tree](images/decision_tree.png)
-
 ### Neural Network
 
-A Neural Network was also trained to classify the workload types. The model architecture included fully connected layers with dropout for regularization. The training was monitored using early stopping to prevent overfitting.
+We implemented a Multi-Layer Perceptron (MLP) neural network with two hidden layers of sizes 64 and 32, respectively. We trained this model using the selected features and evaluated it using a 10-fold cross-validation method.
 
-```python
-from tensorflow.keras.models import Sequential
-from tensorflow.keras.layers import Dense, Dropout
+#### Neural Network Architecture
+The architecture consisted of:
+- An input layer matching the number of selected features.
+- Two hidden layers with ReLU activation and dropout for regularization.
+- An output layer with softmax activation for multi-class classification.
 
-model = Sequential()
-model.add(Dense(128, input_dim=input_dim, activation='relu'))
-model.add(Dropout(0.3))
-model.add(Dense(64, activation='relu'))
-model.add(Dropout(0.3))
-model.add(Dense(output_dim, activation='softmax'))
+We used early stopping during training to prevent overfitting, and the model achieved an average accuracy of approximately 99.85% on the test set.
+
+#### Results
+The following figure shows the training and validation accuracy over epochs:
+
+![Neural Network Training](path_to_image4)
+
+**Classification Report:**
+- **Overall Accuracy:** 99.85%
+- **Detailed Metrics:**
+
+```plaintext
+                       precision    recall  f1-score   support
+
+              readseq       1.00      0.94      0.97      1623
+           readrandom       1.00      1.00      1.00     37962
+          readreverse       0.86      0.81      0.83       698
+readrandomwriterandom       1.00      1.00      1.00    102261
+
+             accuracy                           1.00    142544
+            macro avg       0.96      0.94      0.95    142544
+         weighted avg       1.00      1.00      1.00    142544
 ```
 
-**Results:**
-- **Accuracy:** 98.67%
-- **Loss Curve:**
-![NN Loss Curve](images/nn_loss.png)
+### Decision Tree
+
+We also implemented a Decision Tree classifier, which provided high accuracy with a simple and interpretable model structure. The tree was visualized to understand the decision-making process.
+
+#### Results
+The Decision Tree model also achieved a perfect accuracy score on the test set, as shown in the following visualizations:
+
+![Decision Tree Visualization - Small Depth](path_to_image5)
+
+![Decision Tree Visualization - Full Depth](path_to_image6)
+
+**Classification Report:**
+- **Overall Accuracy:** 100%
+- **Detailed Metrics:**
+
+```plaintext
+                       precision    recall  f1-score   support
+
+              readseq       1.00      1.00      1.00      1623
+           readrandom       1.00      1.00      1.00     37962
+          readreverse       1.00      1.00      1.00       698
+readrandomwriterandom       1.00      1.00      1.00    102261
+
+            micro avg       1.00      1.00      1.00    142544
+            macro avg       1.00      1.00      1.00    142544
+         weighted avg       1.00      1.00      1.00    142544
+          samples avg       1.00      1.00      1.00    142544
+```
 
 ### Random Forest
 
-To further improve the model's performance, a Random Forest classifier was implemented. Feature importance was analyzed to reduce the dimensionality of the dataset, retaining only the most significant features.
+Lastly, we implemented a Random Forest classifier, which combines multiple decision trees to improve accuracy and generalization. The Random Forest model achieved perfect accuracy on the test set, similar to the Decision Tree but with potentially better generalization on unseen data.
 
-```python
-from sklearn.ensemble import RandomForestClassifier
+#### Results
+The following visualization shows one of the decision trees within the Random Forest:
 
-rf_model = RandomForestClassifier(n_estimators=100, random_state=42)
-rf_model.fit(X_train, y_train)
+![Random Forest Tree Visualization](path_to_image7)
+
+**Classification Report:**
+- **Overall Accuracy:** 100%
+- **Detailed Metrics:**
+
+```plaintext
+                       precision    recall  f1-score   support
+
+              readseq       1.00      1.00      1.00      1623
+           readrandom       1.00      1.00      1.00     37962
+          readreverse       1.00      1.00      1.00       698
+readrandomwriterandom       1.00      1.00      1.00    102261
+
+             accuracy                           1.00    142544
+            macro avg       1.00      1.00      1.00    142544
+         weighted avg       1.00      1.00      1.00    142544
 ```
 
-**Results:**
-- **Accuracy:** 97.85%
-- **Feature Importance:**
-![Feature Importance](images/feature_importance.png)
 
 ## Results and Discussion
 
