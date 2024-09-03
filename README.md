@@ -177,18 +177,29 @@ readrandomwriterandom       1.00      1.00      1.00    102261
 ```
 
 
+
 ## Results and Discussion
 
-The Neural Network outperformed the other models, achieving the highest accuracy on the test set. The Random Forest model also showed strong performance, particularly in terms of feature importance analysis. The Decision Tree, while less accurate, provided useful insights into the data's structure.
+All three models—Neural Network, Decision Tree, and Random Forest—achieved exceptionally high accuracy on the test set, with each model reaching nearly perfect classification performance. Despite their differences in complexity and interpretability, all models proved to be highly effective in classifying the workload types in this project.
 
 ### Performance Comparison
 | Model            | Accuracy  | Notes                                       |
 |------------------|-----------|---------------------------------------------|
-| Decision Tree    | 95.24%    | Simple, interpretable, but lower accuracy   |
-| Neural Network   | 98.67%    | High accuracy, risk of overfitting          |
-| Random Forest    | 97.85%    | Good balance of performance and interpretability |
+| Decision Tree    | 100.00%   | Simple, interpretable, perfect accuracy     |
+| Neural Network   | 99.85%    | High accuracy, complex model with slight variability in precision |
+| Random Forest    | 100.00%   | Combines multiple trees for perfect accuracy and generalization |
+
+### Discussion
+
+- **Decision Tree:** The Decision Tree model, despite its simplicity, achieved a perfect accuracy of 100%. Its interpretability makes it an excellent tool for understanding the decision-making process, as visualized in the tree plots. This model is particularly useful when clarity in model decisions is a priority.
+
+- **Neural Network:** The Neural Network also performed exceptionally well, with an accuracy of 99.85%. It showed slightly lower precision and recall for the `readreverse` class, but overall, it delivered reliable predictions. The model's complexity and flexibility allowed it to capture intricate patterns in the data, but this also makes it less interpretable compared to decision trees.
+
+- **Random Forest:** The Random Forest model matched the Decision Tree in accuracy, also achieving 100%. By averaging the results of multiple decision trees, it provided robust predictions while also offering insights into feature importance, which is beneficial for feature selection and understanding the data's underlying structure.
 
 ## Conclusion
 
-Through this project, we developed and compared several models to optimize the Readahead feature under varying workloads. The Neural Network provided the best performance, but the Random Forest's interpretability makes it a strong candidate for further exploration. Future work could involve integrating these models into a real-time system to dynamically adjust Readahead sizes based on the current workload.
+Through this project, we developed and compared three models—Decision Tree, Neural Network, and Random Forest—to optimize the Readahead feature under varying workloads. Both the Decision Tree and Random Forest models achieved perfect accuracy, demonstrating their strength in handling this classification task. The Neural Network, while slightly less accurate, offered flexibility in model design and captured complex relationships within the data. Given these results, the Random Forest model stands out for its combination of accuracy and interpretability, making it a strong candidate for real-time systems that require dynamic adjustment of Readahead sizes based on current workloads.
+
+
 
