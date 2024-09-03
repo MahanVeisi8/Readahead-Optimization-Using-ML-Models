@@ -71,13 +71,13 @@ babeltrace2 /my-kernel-trace > data.txt
 
 After collecting and organizing the dataset, a crucial step involved preprocessing the data to prepare it for model training. The dataset contains 1,425,432 rows and 9 columns, as shown in the figure below:
 
-![Dataset Overview](path_to_image1)
+![Dataset Overview](img/dataset.png)
 
 ### Feature Selection Using Random Forest
 
 To identify the most important features for our models, we used a Random Forest classifier to calculate feature importances. The Random Forest model highlighted `cumulative_time_elapsed` as the most significant feature by a large margin, followed by `flag`, `ino`, and `time_difference`. Features like `state` and `distance_from_mean` were less significant.
 
-![Feature Importance](path_to_image2)
+![Feature Importance](img/featureImportance.png)
 
 Based on this analysis, we removed features with importance values below a certain threshold to reduce the dataset's dimensionality, focusing only on the most relevant data.
 
@@ -85,7 +85,7 @@ Based on this analysis, we removed features with importance values below a certa
 
 To understand the distribution and separability of the different workload types in our dataset, we used t-SNE (t-distributed Stochastic Neighbor Embedding), a dimensionality reduction technique. The t-SNE plot below shows the dataset visualized in two dimensions, highlighting the clustering of different workload types. The distinct separation in the t-SNE plot indicates that our features are well-suited for classifying the different workloads.
 
-![t-SNE Visualization](path_to_image3)
+![t-SNE Visualization](img/t-SNE2DVisualization.png)
 
 ## Model Implementation
 
@@ -104,7 +104,7 @@ We used early stopping during training to prevent overfitting, and the model ach
 #### Results
 The following figure shows the training and validation accuracy over epochs:
 
-![Neural Network Training](path_to_image4)
+![Neural Network Training](img/mlphistory.png)
 
 **Classification Report:**
 - **Overall Accuracy:** 99.85%
@@ -130,9 +130,7 @@ We also implemented a Decision Tree classifier, which provided high accuracy wit
 #### Results
 The Decision Tree model also achieved a perfect accuracy score on the test set, as shown in the following visualizations:
 
-![Decision Tree Visualization - Small Depth](path_to_image5)
-
-![Decision Tree Visualization - Full Depth](path_to_image6)
+![Decision Tree Visualization - Small Depth](img/DecisionTreeVis.png)
 
 **Classification Report:**
 - **Overall Accuracy:** 100%
@@ -159,7 +157,7 @@ Lastly, we implemented a Random Forest classifier, which combines multiple decis
 #### Results
 The following visualization shows one of the decision trees within the Random Forest:
 
-![Random Forest Tree Visualization](path_to_image7)
+![Random Forest Tree Visualization](img/RandomForestVis.png)
 
 **Classification Report:**
 - **Overall Accuracy:** 100%
